@@ -1,0 +1,60 @@
+---
+export interface Link {
+    name: string;
+    url: string;
+    icon_class: string;
+    disabled: string | undefined;
+}
+export interface Props {
+    links: Link[];
+}
+
+const {links} = Astro.props;
+---
+<div class="publication-links">
+    {links.map((link) => {
+        // <span class="link-block">
+        //     <a href={link.url} class="external-link button is-normal is-rounded is-dark">
+        //         <span class="icon">
+        //             <i class={link.icon_class} />
+        //         </span>
+        //         <span>{link.name}</spaGn>
+        //     </a>
+        // </span>
+
+        let attributes = {};
+        if (link.url !== undefined) {
+            attributes["href"] = link.url;
+        }
+        if (link.disabled !== undefined) {
+            attributes["disabled"] = true;
+        }
+        return (
+                // <button {...attributes} class="external-link button is-normal is-rounded is-dark">
+        <a {...attributes} class="external-link button is-normal is-rounded is-dark" target="_blank" rel="noopener noreferrer">
+            <span class="icon">
+                <i class={link.icon_class}/>
+            </span>
+            <span>{link.name}</span>
+        </a>
+        );
+    })}
+</div>
+<style>
+    .publication-links {
+        margin: 0.75em 1.0em;
+    }
+
+    .button {
+        margin: 0.15em 0.3em;
+    }
+
+    .button.is-dark {
+        transition: background-color 0.2s ease;
+    }
+
+    .button.is-dark:hover {
+        background-color: hsl(207 99% 30%);
+        /*background: linear-gradient(30deg, rgba(2,123,148,1) 0%, rgba(1,84,151,1) 80%, rgba(2,0,36,1) 100%);*/
+    }
+</style>

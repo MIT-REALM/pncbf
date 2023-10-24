@@ -1,0 +1,479 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Card from '../components/Card.astro';
+import AuthorBlock from "../components/AuthorBlock.astro";
+
+import type GAInfo from "../layouts/Layout.astro";
+import type Author from "../components/AuthorBlock.astro"
+import type Link from "../components/LinkBlock.astro"
+
+const site_title = "How to Train Your Neural Control Barrier Function";
+const title = "How to Train Your Neural Control Barrier Function:";
+const subtitle = "Learning Safety Filters for Complex Input-Constrained Systems"
+
+const authors: Author[] = [
+    {"name": "Oswin So", "url": "https://oswinso.xyz", "number": 1},
+    {"name": "Zachary Serlin", "number": 2},
+    {"name": "Makai Mann", "number": 2},
+    {"name": "Jake Gonzales", "number": 2},
+    {"name": "Kwesi Rutledge", "number": 1},
+    {"name": "Nicholas Roy", "number": 1},
+    {"name": "Chuchu Fan", "url": "https://chuchu.mit.edu", "number": 1}
+]
+
+const links: Link[] = [
+    {"name": "Paper", "url": "https://arxiv.org/pdf/2310.15478.pdf", "icon_class": "fas fa-file-pdf"},
+    {"name": "arXiv", "url": "https://arxiv.org/abs/2310.15478", "icon_class": "ial icon-arxiv-logo-small"},
+]
+
+const bibtex = `
+@inproceedings{so2024train,
+  title     = {How to Train Your Neural Control Barrier Function: Learning Safety Filters for Complex Input-Constrained Systems},
+  author    = {So, Oswin and Serlin, Zachary and Mann, Makai and Gonzales, Jake and Rutledge, Kwesi and Roy, Nicholas and Fan, Chuchu},
+  booktitle = {2024 IEEE International Conference on Robotics and Automation (ICRA) (Under Review)},
+  year      = {2024}
+}
+`.trim();
+
+const ga: GAInfo = {"id": "G-XSZ0VNSN4H"};
+---
+
+<Layout site_title={site_title} title={title} subtitle={subtitle} authors={authors} links={links} bibtex={bibtex} ga={ga}>
+    <section class="teaser container is-max-desktop">
+        <div class="teaser-vids">
+            <img src=`${import.meta.env.BASE_URL}/media/hero.jpg` />
+        </div>
+    </section>
+
+    <main>
+        <section class="container is-max-desktop">
+            <header>
+                <h2 class="section-title">Learning Safety Filters</h2>
+            </header>
+            <div class="section-body flex-col">
+                <p>
+                    We tackle the problem of <strong>learning safety filters</strong>.
+                    That is, we wish to <span class="obj-green">minimally modify</span> a given test policy to <span class="constr-red">maintain safety</span>.
+                </p>
+                <figure>
+                    <img src=`${import.meta.env.BASE_URL}/media/filter_problem.svg` alt="Safety Filter Problem" />
+                </figure>
+                <p>
+                    In this work, we construct a safety filter using <strong>Control Barrier Functions (CBF)</strong>.
+                </p>
+            </div>
+        </section>
+
+        <section class="container is-max-desktop">
+            <header>
+                <h2 class="section-title">Constructing CBFs for Input Constrained Systems is Hard</h2>
+            </header>
+            <div class="section-body flex-col">
+                <p>
+                    Constructing a CBF for arbitrary input constrained systems is hard.
+                    For high relative-degree systems, a common approach is to use Higher-Order CBFs (HOCBFs).
+                    However, even on the simplest example of a double-integrator with bounded accelerations,
+                    many HOCBF candidate functions fail to satisfy the CBF conditions and are unsafe.
+                </p>
+                <p is:raw>
+                    For example, consider a double integrator (\(\dot{p} = v, \dot{v} = u \)) with box-constrained accelerations \(\lvert u \rvert \leq 1\) and a safety constraint for the position to be positive (\( p \geq 0 \)).
+                    The HOCBF <i>candidate</i> \( B(x) = -v - \alpha p \) is valid if and only if \( \alpha = 0 \), which deems all negative velocities as unsafe and is overly conservative.
+                    Other choices of \( \alpha \) will result in safety violations for some regions of the state space.
+                </p>
+                <figure>
+                    <video autoplay muted playsinline loop>
+                        <source type="video/webm" src=`${import.meta.env.BASE_URL}/media/icra24_hocbf.webm`/>
+                        <source type="video/mp4" src=`${import.meta.env.BASE_URL}/media/icra24_hocbf_h265.mp4`/>
+                    </video>
+                    <figcaption>
+                        While the HOCBF candidate with \(\alpha > 0\) appears to be safe on easier states, it will result in safety violations on harder states and hence is not a valid HOCBF.
+                    </figcaption>
+                </figure>
+            </div>
+        </section>
+
+        <section class="container is-max-desktop">
+            <header>
+                <h2 class="section-title">Policy CBFs: Constructing CBFs from the Policy Value Function</h2>
+            </header>
+            <div class="section-body flex-col">
+                <p is:raw>
+                    In this work, we use the insight that the <i>maximum-over-time</i> value function is a CBF for <u>any</u> choice of nominal policy \(\pi\).
+                </p>
+                <div class="display-eq" is:raw>
+                \( \displaystyle V^{h,\pi}(x) \coloneqq \sup_{t \geq 0}\, h(x_t^\pi) \).
+                </div>
+                <p is:raw>
+                    where the avoid set \( \mathcal{A} \) is described as the superlevel set of some continuous function \(h\):
+                </p>
+                <div class="display-eq" is:raw>
+                    \( \displaystyle \mathcal{A} = \{ x \mid h(x) > 0 \} \).
+                </div>
+                <p is:raw>
+                Learning the policy value function \(V^{h,\pi}\) for a nominal policy \(\pi\) can be interpreted as <strong>policy distillation</strong>:
+                \(V^{h,\pi}\) contains knowledge about the invariant set, which can be used as a safety filter for another (potentially unsafe) policy.
+                </p>
+                <figure>
+                    <video autoplay muted playsinline loop>
+                        <source type="video/webm" src=`${import.meta.env.BASE_URL}/media/toyuni_export.webm`/>
+                        <source type="video/mp4" src=`${import.meta.env.BASE_URL}/media/toyuni_h265.mp4`/>
+                    </video>
+                    <figcaption>
+                    </figcaption>
+                </figure>
+            </div>
+        </section>
+
+        <section id="experiments" class="container is-max-desktop">
+            <header>
+                <h2 class="section-title">Simulation Experiments</h2>
+            </header>
+            <div class="section-body">
+                <section class="task-section">
+                    <h3 class="task-name">F16 Fighter Jet</h3>
+                    <dl class="task-summary">
+                        <!--<dt class="def-stabilize">Stabilize</dt>-->
+                        <!--<dd>Stabilize to the <span class="box-green">green region</span> near the floor</dd>-->
+                        <dt class="def-avoid">Avoid</dt>
+                        <dd>Avoid crashing into the ground. Avoid extreme angles of attack.</dd>
+                    </dl>
+                    <video autoplay muted playsinline loop>
+                        <source type="video/webm" src=`${import.meta.env.BASE_URL}/media/f16_sidebyside_export.webm`/>
+                        <source type="video/mp4" src=`${import.meta.env.BASE_URL}/media/f16_sidebyside_h265.mp4`/>
+                    </video>
+                </section>
+            </div>
+        </section>
+
+        {/*<section class="section">
+        <div class="container is-max-desktop">
+            <div class="content">
+                <h2 class="title is-4">Simulation Experiments</h2>
+                <h3 class="title is-5">Hopper</h3>
+                MP4
+                <h3 class="title is-5">F16</h3>
+                MP4
+            </div>
+        </div>
+    </section>*/}
+
+        <section id="abstract" class="container is-max-desktop">
+            <header>
+                <h2 class="section-title">Abstract</h2>
+            </header>
+            <div class="section-body has-text-justified">
+                <p>
+                    Control barrier functions (<abbr>CBF</abbr>) have become popular as a safety filter to guarantee the safety of nonlinear dynamical systems for arbitrary inputs.
+                    However, it is difficult to construct functions that satisfy the <abbr>CBF</abbr> constraints for high relative degree systems with input constraints.
+                    To address these challenges, recent work has explored learning CBFs using neural networks via neural CBF (<abbr>NCBF</abbr>).
+                    However, such methods face difficulties when scaling to higher dimensional systems under input constraints.
+                </p>
+                <p>
+                    In this work, we first identify challenges that <abbr>NCBFs</abbr> face during training.
+                    Next, to address these challenges, we propose policy neural CBF (<abbr>PNCBF</abbr>), a method of constructing <abbr>CBF</abbr>s by learning the value function of a nominal policy,
+                    and show that the value function of the maximum-over-time cost is a <abbr>CBF</abbr>.
+                    We demonstrate the effectiveness of our method in simulation on a variety of systems ranging from toy linear systems to an F-16 jet with a 16-dimensional state space. Finally, we validate our approach on a two-agent quadcopter system on hardware under tight input constraints.
+                </p>
+            </div>
+        </section>
+    </main>
+
+
+</Layout>
+
+<style>
+    main {
+        display: flex;
+        flex-direction: column;
+        gap: 3rem;
+        margin: 3rem 0;
+        padding: 0 1.25rem;
+    }
+
+    main > section.container {
+        width: 100%;
+        margin: 1rem auto;
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+    }
+
+    .section-body {
+        display: flex;
+        align-items: center;
+        row-gap: 0.8em;
+        column-gap: 1em;
+
+        font-size: 1.2em;
+    }
+
+    .full-width {
+        width: 100%;
+    }
+
+    .display-eq {
+        font-size: large;
+    }
+
+    @media screen and (min-width: 1024px) {
+        .display-eq {
+            font-size: xx-large;
+        }
+    }
+
+    .section-body > p {
+        align-self: flex-start;
+    }
+
+    .teaser {
+        font-family: "Google Sans", sans-serif;
+        display: flex;
+        align-items: center;
+        gap: 1em;
+        flex-wrap: wrap;
+    }
+
+    .teaser > header {
+        padding: 0 1.25rem;
+    }
+
+    #summary > .section-body {
+        flex-wrap: wrap;
+        text-align: center;
+        flex-direction: column-reverse;
+    }
+
+    //#epigraph-form > .section-body {
+    //    flex-direction: column;
+    //}
+
+    .flex-col {
+        flex-direction: column;
+    }
+
+    #experiments > .section-body {
+        flex-direction: column;
+        row-gap: 1.5em;
+        margin: 0 -1rem;
+    }
+
+    #abstract > .section-body {
+        flex-direction: column;
+        row-gap: 1.1em;
+    }
+
+
+    @media screen and (min-width: 1024px) {
+        .teaser {
+            flex-wrap: nowrap;
+        }
+
+        .teaser > header {
+            padding: 0 0;
+        }
+
+        #summary > .section-body {
+            flex-wrap: nowrap;
+            flex-direction: row;
+        }
+
+        main {
+            padding: 0 0;
+        }
+    }
+
+    .teaser > header {
+        text-align: center;
+        font-size: 1.7rem;
+        flex: 1 4 auto;
+    }
+
+    .teaser > .teaser-vids {
+        flex: 1 6 auto;
+        display: flex;
+        max-width: 100%;
+    }
+
+    video {
+        min-width: 5%;
+    }
+
+
+    #summary > .section-body > video {
+        flex: 1 1 auto;
+        max-height: 80vh;
+    }
+
+    h2, h3 {
+        color: #363636;
+    }
+
+    section {
+        font-family: "Open Sans", sans-serif;
+    }
+
+    iframe {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+
+        border: 0;
+    }
+
+    .avoidwrap {
+        display: inline-block;
+    }
+
+    #unicycle-vid-col {
+        width: 100.0%
+    }
+
+    #unicycle-txt-col {
+        width: 100.0%;
+    }
+
+    .section-title {
+        font-weight: 600;
+        line-height: 1.125;
+
+        font-size: 1.6rem;
+    }
+
+    .task-name {
+        font-weight: 600;
+        font-size: 1.4rem;
+        text-align: center;
+    }
+
+    .section-title:not(:last-child) {
+        margin-bottom: 1.5rem;
+    }
+
+    @media screen and (min-width: 1280px) {
+        .short-tag {
+            font-size: 2rem;
+        }
+
+        .section-title {
+            font-size: 1.75rem;
+        }
+
+        .section-title:not(:last-child) {
+            margin-bottom: 1.5rem;
+        }
+
+        #unicycle-vid-col {
+            width: 40.0%
+        }
+
+        #unicycle-txt-col {
+            width: 60.0%;
+        }
+    }
+
+    @media screen and (min-width: 2000px) {
+        #unicycle-vid-col {
+            width: 50%;
+        }
+
+        #unicycle-txt-col {
+            width: 50%;
+        }
+    }
+
+    u {
+        text-decoration: none;
+        border-bottom: 1px solid #444444;
+    }
+
+    #abstract > .section-body > p {
+        font-size: 0.9rem;
+    }
+
+    @media screen and (min-width: 1024px) {
+        #abstract > .section-body > p {
+            font-size: 0.95em;
+        }
+    }
+
+    figcaption {
+        font-size: 0.8em;
+    }
+
+    #shade-blue {
+        background-color: #E0F7FA;
+        color: #167783;
+        padding: 0.2em 0.3em;
+    }
+
+    #cost-blue {
+        color: #348ABD;
+        font-weight: 600;
+    }
+
+    .obj-green {
+        color: #8EBA42;
+        font-weight: 600;
+    }
+
+    .constr-red {
+        color: #E24A33;
+        font-weight: 600;
+    }
+
+    .box-green, .box-red {
+        padding: 0.1em 0.25em;
+    }
+
+    .box-green {
+        background-color: #E8F5E9;
+        color: #3D8840;
+    }
+
+    .box-red {
+        background-color: #FFEBEE;
+        color: #AE2020;
+    }
+
+    dl.task-summary {
+        display: grid;
+        grid-template-columns: min-content auto;
+        margin: 0 auto 0.4em;
+        grid-column-gap: 1em;
+        align-items: center;
+    }
+
+    .def-stabilize {
+        color: hsl(122 58% 20%);
+    }
+
+    .def-avoid {
+        //color: hsl(0 89% 20%);
+        color: hsl(0 89% 30%);
+    }
+
+    @media screen and (min-width: 1024px) {
+        dl.task-summary {
+            max-width: 80%;
+        }
+    }
+
+    dt {
+        grid-column: 1;
+        font-weight: 600;
+        font-size: 1.2em;
+        text-align: center;
+    }
+
+    dd {
+        grid-column: 2;
+    }
+
+    dt, dd {
+        display: table-cell;
+        margin: 0;
+        padding: .5em .5em;
+    }
+</style>

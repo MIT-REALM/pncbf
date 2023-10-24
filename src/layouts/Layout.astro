@@ -1,0 +1,142 @@
+---
+import AuthorBlock from "../components/AuthorBlock.astro"
+import LinkBlock from "../components/LinkBlock.astro"
+import { Code } from 'astro/components'
+import "../styles/arxiv_icons.css"
+
+import type Author from "../components/AuthorBlock.astro"
+import type Link from "../components/LinkBlock.astro"
+
+export type GAInfo = {
+	id: string;
+}
+export interface Props {
+	site_title: string;
+	title: string;
+	subtitle: string;
+	authors: Author[];
+	links: Link[];
+	bibtex: string;
+	ga: GAInfo;
+}
+
+const { site_title, title, subtitle, authors, links , bibtex, ga} = Astro.props;
+---
+
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<link rel="icon" type="image/svg+xml" href=`${import.meta.env.BASE_URL}/favicon.svg` />
+		<link rel="icon" type="image/png" href=`${import.meta.env.BASE_URL}/favicon.png` />
+		<title>{site_title}</title>
+		<link href="https://fonts.googleapis.com/css?family=Google+Sans|Inter+Tight|Noto+Sans|Open+Sans:300,500,600,700|Castoro" rel="stylesheet">
+		<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.4/css/bulma.min.css">
+		<link rel="stylesheet" href=`${import.meta.env.BASE_URL}/styles/fontawesome.all.min.css`>
+		<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/jpswalsh/academicons@1/css/academicons.min.css">
+		<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.7/dist/katex.min.css" integrity="sha384-3UiQGuEI4TTMaFmGIZumfRPtfKQ3trwQE2JgosJxCnGmQpL/lJdjpcHkaaFwHlcI" crossorigin="anonymous">
+
+		<script defer src=`${import.meta.env.BASE_URL}/styles/fontawesome.all.min.js`></script>
+
+		<!-- The loading of KaTeX is deferred to speed up page rendering -->
+		<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.7/dist/katex.min.js" integrity="sha384-G0zcxDFp5LWZtDuRMnBkk3EphCK1lhEf4UEyEM693ka574TZGwo4IWwS6QLzM/2t" crossorigin="anonymous"></script>
+
+		<!-- To automatically render math in text elements, include the auto-render extension: -->
+		<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.7/dist/contrib/auto-render.min.js" integrity="sha384-+VBxd3r6XgURycqtZ117nYw44OOcIax56Z4dCRWbxyPt0Koah1uHoK0o4+/RRE05" crossorigin="anonymous"
+				onload="renderMathInElement(document.body);"></script>
+
+    <script defer data-domain="mit-realm.github.io" src="https://plausible.io/js/script.js"></script>
+		<script async src={`https://www.googletagmanager.com/gtag/js?id=${ga.id}`}></script>
+		<script data-gaid={ga.id}>
+			window.dataLayer = window.dataLayer || [];
+			function gtag(){dataLayer.push(arguments);}
+			gtag('js', new Date());
+
+			const gaid = document.currentScript.getAttribute("data-gaid");
+			gtag('config', gaid);
+		</script>
+	</head>
+	<body>
+		<header class="container is-max-desktop has-text-centered">
+			<!-- <div class="container is-max-desktop has-text-centered"> -->
+			<hgroup class="publication-title">
+				<h1>{title}</h1>
+				{ (subtitle !== undefined && subtitle != "") && <p>{subtitle}</p> }
+			</hgroup>
+			<AuthorBlock authors={authors} />
+			<LinkBlock links={links} />
+		</header>
+		<slot />
+		<footer class="container is-max-desktop">
+			<h2 id="bibtex-title" class="title">BibTeX</h2>
+			<Code code={bibtex} lang="bibtex" theme="github-light" wrap />
+		</footer>
+	</body>
+</html>
+
+<style is:global>
+	/** {*/
+	/*	outline: 1px solid red;*/
+	/*}*/
+
+	:root {
+		--accent: 124, 58, 237;
+		--accent-gradient: linear-gradient(45deg, rgb(var(--accent)), #da62c4 30%, white 60%);
+	}
+	html {
+		font-family: system-ui, sans-serif;
+		background-color: #FFFFFF;
+	}
+
+	header.container {
+		/*padding: 1.5rem 1.5rem;*/
+		margin: 1.5rem auto;
+	}
+
+	footer {
+		padding: 0 1.25rem;
+	}
+
+	@media screen and (min-width: 1024px) {
+		footer {
+			padding: 0 0;
+		}
+	}
+
+	.publication-title {
+		font-family: "Google Sans", sans-serif;
+		margin-bottom: 1.5rem;
+	}
+
+	.publication-title > h1 {
+		color: #363636;
+		font-weight: 600;
+		font-size: 1.5rem;
+		line-height: 1.125;
+	}
+
+	.publication-title > p {
+		font-family: "Inter Tight", sans-serif;
+		color: #626262;
+		font-weight: 300;
+		font-size: 1.0rem;
+		line-height: 1.125;
+	}
+
+	@media screen and (min-width: 1280px) {
+		.publication-title > h1 {
+			font-size: 2.5rem;
+			line-height: 1.2;
+		}
+
+		.publication-title > p {
+			font-size: 2.0rem;
+			line-height: 1.2;
+		}
+	}
+
+	#bibtex-title {
+		margin-bottom: 0;
+	}
+</style>

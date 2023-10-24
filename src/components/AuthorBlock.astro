@@ -1,0 +1,44 @@
+---
+
+export interface Author {
+    name: string;
+    url: string;
+    number: number;
+}
+export interface Props {
+    authors: Author[]
+}
+
+const { authors } = Astro.props;
+---
+<div class="publication-authors">
+    {authors.map((author, ii) => (
+            <><span class="line"><a href={author.url}>{author.name}</a></span><sup>{author.number}</sup>{ii < authors.length - 1 && ", "}</>
+    ))}
+</div>
+
+<div class="publication-authors">
+    <span class="line"><sup>1</sup> Massachusetts Institute of Technology</span>,
+    <span class="line"><sup>2</sup> Lincoln Labs</span>
+</div>
+
+<style>
+    .publication-authors {
+        font-family: "Google Sans", sans-serif;
+        font-size: 1.0rem;
+    }
+
+    @media screen and (min-width: 1280px) {
+        .publication-authors {
+            font-size: 1.25rem;
+        }
+    }
+
+    span.line {
+        display: inline-block;
+    }
+
+    a {
+        color: hsl(204, 86%, 53%);
+    }
+</style>

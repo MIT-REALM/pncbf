@@ -1,0 +1,32 @@
+@font-face {
+    font-family: 'arxiv_icons';
+    src: url("/pncbf/fonts/arxiv_icons.woff?v9zqty") format('woff');
+    font-weight: normal;
+    font-style: normal;
+    font-display: block;
+}
+
+i.ial {
+    /* use !important to prevent issues with browser extensions that change fonts */
+    font-family: 'arxiv_icons' !important;
+    speak: never;
+    font-style: normal;
+    font-weight: normal;
+    font-variant: normal;
+    text-transform: none;
+    line-height: 1;
+
+    /* Better Font Rendering =========== */
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+.ial.icon-arxiv-logo:before {
+    content: "\e900";
+    color: #fff;
+}
+
+.ial.icon-arxiv-logo-small:before {
+    content: "\e901";
+    color: #fff;
+}
